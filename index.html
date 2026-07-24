@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>15K Nocturna Valencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0C14;
+    --bg2: #11141F;
+    --card: #161A28;
+    --amber: #FFB238;
+    --amber-dim: #6b5426;
+    --cyan: #33E0C7;
+    --text: #EDEEF2;
+    --text-dim: #8A8D9C;
+    --line: #262A3A;
+    --red: #FF5D5D;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overscroll-behavior-y: contain;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255,178,56,0.10), transparent 45%),
+      radial-gradient(circle at 90% 10%, rgba(51,224,199,0.08), transparent 40%),
+      var(--bg);
+    padding-bottom: 40px;
+  }
+  .wrap{max-width:480px; margin:0 auto; padding: 18px 16px 8px;}
+
+  /* HEADER */
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:11px; letter-spacing:3px; color:var(--amber);
+    text-transform:uppercase; margin:0 0 6px;
+  }
+  h1{
+    font-family:'Archivo Black', sans-serif;
+    font-size:26px; line-height:1.05; margin:0 0 14px; color:var(--text);
+  }
+  .countdown-row{
+    display:flex; align-items:baseline; gap:10px; margin-bottom:18px;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    padding:12px 0;
+  }
+  .countdown-num{font-family:'Archivo Black'; font-size:38px; color:var(--amber); line-height:1;}
+  .countdown-label{font-size:12px; color:var(--text-dim); line-height:1.3;}
+  .countdown-label b{color:var(--text); display:block; font-size:13px;}
+
+  /* TOGGLE */
+  .toggle-row{display:flex; gap:8px; margin-bottom:16px;}
+  .toggle-btn{
+    flex:1; padding:11px 0; text-align:center; border-radius:10px;
+    font-weight:700; font-size:13px; letter-spacing:0.5px;
+    border:1px solid var(--line); background:var(--card); color:var(--text-dim);
+    cursor:pointer; transition: all .15s ease;
+  }
+  .toggle-btn.active{
+    background: linear-gradient(135deg, var(--amber), #e08e1a);
+    color:#161200; border-color: transparent;
+  }
+
+  /* WEEK STRIP */
+  .week-strip{
+    display:flex; gap:6px; overflow-x:auto; padding: 2px 0 16px;
+    scrollbar-width:none;
+  }
+  .week-strip::-webkit-scrollbar{display:none;}
+  .week-chip{
+    flex:0 0 auto; width:44px; height:44px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background:var(--card); border:1px solid var(--line); cursor:pointer;
+  }
+  .week-chip .wn{font-family:'Space Mono'; font-size:14px; font-weight:700; color:var(--text-dim);}
+  .week-chip .wl{font-size:8px; color:var(--text-dim); letter-spacing:1px;}
+  .week-chip.active{background:rgba(255,178,56,0.12); border-color:var(--amber);}
+  .week-chip.active .wn{color:var(--amber);}
+  .week-chip.race .wn{color:var(--red);}
+  .week-chip.race.active{border-color:var(--red); background:rgba(255,93,93,0.12);}
+  .week-chip.race.active .wn{color:var(--red);}
+
+  .week-title{font-size:13px; color:var(--text-dim); margin-bottom:12px;}
+  .week-title b{color:var(--text);}
+
+  /* CARD DECK */
+  .deck{position:relative; min-height:260px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    padding:20px; margin-bottom:12px; position:relative; overflow:hidden;
+  }
+  .card::before{
+    content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
+  }
+  .card.suave::before{background:var(--cyan);}
+  .card.fuerza::before{background:var(--amber);}
+  .card.series::before{background:var(--red);}
+  .card.descanso::before{background:var(--text-dim);}
+  .card.larga::before{background: linear-gradient(var(--cyan), var(--amber));}
+  .card.carrera::before{background: linear-gradient(var(--red), var(--amber)); width:6px;}
+
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;}
+  .day-name{font-family:'Space Mono'; font-size:11px; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase;}
+  .tag{
+    font-size:10px; font-weight:700; letter-spacing:1px; padding:4px 9px; border-radius:20px;
+    text-transform:uppercase;
+  }
+  .tag.suave{background:rgba(51,224,199,0.15); color:var(--cyan);}
+  .tag.fuerza{background:rgba(255,178,56,0.15); color:var(--amber);}
+  .tag.series{background:rgba(255,93,93,0.15); color:var(--red);}
+  .tag.descanso{background:rgba(138,141,156,0.15); color:var(--text-dim);}
+  .tag.larga{background:rgba(51,224,199,0.15); color:var(--cyan);}
+  .tag.carrera{background:rgba(255,93,93,0.22); color:var(--red);}
+
+  .session-title{font-family:'Archivo Black'; font-size:19px; margin:0 0 8px; line-height:1.15;}
+  .session-detail{font-size:14px; color:var(--text-dim); line-height:1.5; margin:0;}
+  .session-detail b{color:var(--text); font-weight:700;}
+
+  .metric-row{display:flex; gap:10px; margin-top:14px;}
+  .metric{
+    flex:1; background:var(--bg2); border-radius:10px; padding:8px 10px; text-align:center;
+  }
+  .metric .mv{font-family:'Space Mono'; font-weight:700; font-size:15px; color:var(--amber);}
+  .metric .ml{font-size:9px; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; margin-top:2px;}
+
+  .card.done{opacity:0.55;}
+  .card.done .session-title{text-decoration: line-through; text-decoration-color: var(--text-dim);}
+
+  .check-btn{
+    width:26px; height:26px; border-radius:8px;
+    border:1.5px solid var(--line); background:var(--bg2); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition: all .15s ease;
+  }
+  .check-btn svg{width:15px; height:15px; opacity:0; transition: opacity .15s ease;}
+  .check-btn svg path{stroke:#0A0C14;}
+  .card.done .check-btn{background: linear-gradient(135deg, var(--cyan), #1fb39d); border-color:transparent;}
+  .card.done .check-btn svg{opacity:1;}
+
+  .card-top-right{display:flex; align-items:center; gap:8px;}
+
+  .week-progress{
+    font-family:'Space Mono'; font-size:11px; color:var(--text-dim); margin-bottom:10px;
+  }
+  .week-progress b{color:var(--cyan);}
+
+  /* FOOTER NOTES */
+  .notes-block{
+    margin-top:22px; padding:16px; border-radius:14px; background:var(--bg2); border:1px solid var(--line);
+  }
+  .notes-block h3{
+    font-family:'Space Mono'; font-size:11px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--amber); margin:0 0 10px;
+  }
+  .notes-block ul{margin:0; padding-left:18px; color:var(--text-dim); font-size:13px; line-height:1.6;}
+  .notes-block li{margin-bottom:6px;}
+  .notes-block b{color:var(--text);}
+
+  .steven-block{
+    margin-top:12px; padding:10px 12px; border-radius:10px;
+    background: rgba(255,178,56,0.07); border:1px dashed var(--amber-dim);
+  }
+  .steven-block .sv-label{
+    font-family:'Space Mono'; font-size:9px; letter-spacing:1.5px; color:var(--amber);
+    text-transform:uppercase; margin-bottom:6px; display:block;
+  }
+  .steven-block .sv-list{font-size:12.5px; color:var(--text-dim); line-height:1.7;}
+  .steven-block .sv-list b{color:var(--text); font-weight:600;}
+  .sv-star{color:var(--amber);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">VALENCIA · 15K NOCTURNA</div>
+  <h1>Plan de entrenamiento hasta la línea de salida</h1>
+
+  <div class="countdown-row">
+    <div class="countdown-num" id="daysLeft">61</div>
+    <div class="countdown-label">días para la carrera<b id="raceDateLabel">Sábado 26 de septiembre</b></div>
+  </div>
+
+  <div class="toggle-row">
+    <div class="toggle-btn active" data-mode="exigente" onclick="setMode('exigente')">EXIGENTE · 6 días</div>
+    <div class="toggle-btn" data-mode="realista" onclick="setMode('realista')">REALISTA · 4 días</div>
+  </div>
+
+  <div class="week-strip" id="weekStrip"></div>
+
+  <div class="week-title" id="weekTitle"></div>
+  <div class="week-progress" id="weekProgress"></div>
+
+  <div class="deck" id="deck"></div>
+
+  <div class="notes-block">
+    <h3>Notas rápidas</h3>
+    <ul>
+      <li><b>Punto de partida:</b> 7,5 km en 46 min (23 jul), ritmo irregular.</li>
+      <li><b>Objetivo:</b> ritmo de 6:00/km, bracket 1h30.</li>
+      <li>Corre a primera hora o por la noche, el calor de Valencia aprieta.</li>
+      <li>Series de 400m a ritmo objetivo ≈ 2:24 por repetición.</li>
+      <li>Fuerza siempre a peso corporal: sentadillas, zancadas, flexiones, plancha, burpees.</li>
+      <li>Si algo molesta en el ojo o en el cuerpo, mejor un descanso extra que forzar.</li>
+      <li><span class="sv-star">*</span> Ejercicios que te recomendó Steven, integrados en cada día de fuerza.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const RACE_DATE = new Date(2026, 8, 26); // 26 sep 2026
+
+function fmtDate(d){
+  const days=['dom','lun','mar','mié','jué','vie','sáb'];
+  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+// day types: suave, fuerza, series, descanso, larga, carrera
+function d(type, title, detail, metrics){ return {type, title, detail, metrics: metrics||[]}; }
+
+const weeks = [
+  { start:"2026-07-27", label:"Adaptación",
+    exigente:[
+      d('suave','Rodaje suave','5 km a ritmo cómodo, puedes hablar sin ahogarte.',[['5 km','DIST'],['~35 min','TIEMPO']]),
+      d('fuerza','Fuerza cuerpo completo','Sentadillas, zancadas, flexiones, plancha, puente de glúteo. 3 series x 10-12 reps.',[['3x12','SERIES']]),
+      d('suave','Rodaje suave','5 km ritmo cómodo.',[['5 km','DIST']]),
+      d('descanso','Descanso','Paseo opcional, sin carrera ni fuerza.',[]),
+      d('suave','Rodaje suave','6 km, sube un poco el volumen.',[['6 km','DIST']]),
+      d('fuerza','Fuerza + volumen','Mismo circuito, sube a 4 series.',[['4x12','SERIES']]),
+      d('descanso','Descanso total','Recupera, opcional caminar.',[])
+    ],
+    realista:[
+      d('suave','Rodaje suave','5 km ritmo cómodo.',[['5 km','DIST']]),
+      d('fuerza','Fuerza cuerpo completo','Circuito básico, 3 series x 10-12 reps.',[['3x12','SERIES']]),
+      d('suave','Rodaje suave','5 km ritmo cómodo.',[['5 km','DIST']]),
+      d('suave','Rodaje flexible','5-6 km, el día que mejor te venga del finde.',[['5-6 km','DIST']])
+    ]
+  },
+  { start:"2026-08-03", label:"Adaptación",
+    exigente:[
+      d('suave','Rodaje suave','5-6 km ritmo cómodo.',[['5-6 km','DIST']]),
+      d('fuerza','Fuerza cuerpo completo','Circuito completo, 4 series.',[['4x12','SERIES']]),
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('descanso','Descanso','',[]),
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('fuerza','Fuerza + core','Plancha, mountain climbers, hip thrust.',[['3x12','SERIES']]),
+      d('descanso','Descanso total','',[])
+    ],
+    realista:[
+      d('suave','Rodaje suave','5-6 km ritmo cómodo.',[['5-6 km','DIST']]),
+      d('fuerza','Fuerza cuerpo completo','Circuito básico.',[['3x12','SERIES']]),
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('suave','Rodaje comodo','6 km, opcional.',[['6 km','DIST']])
+    ]
+  },
+  { start:"2026-08-10", label:"Primeras series",
+    exigente:[
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('fuerza','Fuerza + explosivo','Añade sentadilla salto y zancada con salto.',[['4x12','SERIES']]),
+      d('series','Series 400m','5x400m rápido, 90s trote entre series. Calienta y enfría.',[['5x400','REPS'],['~2:24','RITMO/REP']]),
+      d('descanso','Descanso','',[]),
+      d('suave','Rodaje suave','7 km ritmo cómodo.',[['7 km','DIST']]),
+      d('fuerza','Fuerza + burpees','Circuito completo con burpees añadidos.',[['4x12','SERIES']]),
+      d('larga','Rodaje largo opcional','8 km ritmo cómodo, sin presión.',[['8 km','DIST']])
+    ],
+    realista:[
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('series','Series suaves','5x400m, descanso generoso de 2 min.',[['5x400','REPS']]),
+      d('fuerza','Fuerza cuerpo completo','Circuito básico.',[['3x12','SERIES']]),
+      d('larga','Rodaje largo','7 km ritmo cómodo.',[['7 km','DIST']])
+    ]
+  },
+  { start:"2026-08-17", label:"Construcción",
+    exigente:[
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('fuerza','Fuerza cuerpo completo','Circuito estándar.',[['4x12','SERIES']]),
+      d('series','Series 400m','6x400m a ritmo objetivo, descanso 90s.',[['6x400','REPS'],['6:00/km','OBJETIVO']]),
+      d('descanso','Descanso','',[]),
+      d('suave','Rodaje suave','7-8 km ritmo cómodo.',[['7-8 km','DIST']]),
+      d('fuerza','Fuerza + core','',[['4x12','SERIES']]),
+      d('larga','Rodaje largo','9 km ritmo cómodo.',[['9 km','DIST']])
+    ],
+    realista:[
+      d('suave','Rodaje suave','6-7 km ritmo cómodo.',[['6-7 km','DIST']]),
+      d('series','Series 400m','6x400m ritmo objetivo, descanso 90s-2min.',[['6x400','REPS']]),
+      d('fuerza','Fuerza cuerpo completo','',[['3x12','SERIES']]),
+      d('larga','Rodaje largo','8 km ritmo cómodo.',[['8 km','DIST']])
+    ]
+  },
+  { start:"2026-08-24", label:"Construcción",
+    exigente:[
+      d('suave','Rodaje suave','7 km ritmo cómodo.',[['7 km','DIST']]),
+      d('fuerza','Fuerza explosiva','Más énfasis en potencia.',[['4x12','SERIES']]),
+      d('series','Series 400m','8x400m ritmo objetivo, descanso 90s.',[['8x400','REPS'],['6:00/km','OBJETIVO']]),
+      d('descanso','Descanso','',[]),
+      d('suave','Rodaje suave','7 km ritmo cómodo.',[['7 km','DIST']]),
+      d('fuerza','Fuerza + core','',[['4x12','SERIES']]),
+      d('larga','Rodaje largo','10 km ritmo cómodo.',[['10 km','DIST']])
+    ],
+    realista:[
+      d('suave','Rodaje suave','7 km ritmo cómodo.',[['7 km','DIST']]),
+      d('series','Series 400m','6x400m ritmo objetivo.',[['6x400','REPS']]),
+      d('fuerza','Fuerza cuerpo completo','',[['3x12','SERIES']]),
+      d('larga','Rodaje largo','9 km ritmo cómodo.',[['9 km','DIST']])
+    ]
+  },
+  { start:"2026-08-31", label:"Pico de volumen",
+    exigente:[
+      d('suave','Rodaje suave','7 km ritmo cómodo.',[['7 km','DIST']]),
+      d('fuerza','Fuerza cuerpo completo','',[['4x12','SERIES']]),
+      d('series','Series 800m','5x800m cerca de ritmo objetivo, descanso 2 min trote.',[['5x800','REPS'],['6:00/km','OBJETIVO']]),
+      d('descanso','Descanso','',[]),
+      d('suave','Rodaje suave','8 km ritmo cómodo.',[['8 km','DIST']]),
+      d('fuerza','Fuerza ligera','',[['3x12','SERIES']]),
+      d('larga','⭐ Rodaje más largo','11-12 km ritmo cómodo. El más largo del plan.',[['11-12 km','DIST']])
+    ],
+    realista:[
+      d('suave','Rodaje suave','7 km ritmo cómodo.',[['7 km','DIST']]),
+      d('series','Series 800m','5x800m cerca de ritmo objetivo.',[['5x800','REPS']]),
+      d('fuerza','Fuerza ligera','',[['3x12','SERIES']]),
+      d('larga','⭐ Rodaje más largo','10-11 km ritmo cómodo. El más largo del plan.',[['10-11 km','DIST']])
+    ]
+  },
+  { start:"2026-09-07", label:"Bajada de volumen",
+    exigente:[
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('fuerza','Fuerza moderada','',[['3x12','SERIES']]),
+      d('series','Series 400m','6x400m ritmo objetivo.',[['6x400','REPS']]),
+      d('descanso','Descanso','',[]),
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('fuerza','Fuerza ligera','',[['3x10','SERIES']]),
+      d('larga','Rodaje largo','9 km ritmo cómodo.',[['9 km','DIST']])
+    ],
+    realista:[
+      d('suave','Rodaje suave','6 km ritmo cómodo.',[['6 km','DIST']]),
+      d('series','Series 400m','5x400m ritmo objetivo.',[['5x400','REPS']]),
+      d('fuerza','Fuerza ligera','',[['3x10','SERIES']]),
+      d('larga','Rodaje largo','8-9 km ritmo cómodo.',[['8-9 km','DIST']])
+    ]
+  },
+  { start:"2026-09-14", label:"Afinando",
+    exigente:[
+      d('suave','Rodaje suave','5 km ritmo cómodo.',[['5 km','DIST']]),
+      d('fuerza','Fuerza ligera','Baja intensidad, cuerpo completo.',[['3x10','SERIES']]),
+      d('series','Series cortas','4x400m ritmo objetivo.',[['4x400','REPS']]),
+      d('descanso','Descanso','',[]),
+      d('suave','Rodaje suave','5 km ritmo cómodo.',[['5 km','DIST']]),
+      d('descanso','Descanso o movilidad','',[]),
+      d('suave','Rodaje cómodo','6 km, sin buscar ritmo.',[['6 km','DIST']])
+    ],
+    realista:[
+      d('suave','Rodaje suave','5 km ritmo cómodo.',[['5 km','DIST']]),
+      d('series','Series cortas','4x400m ritmo objetivo.',[['4x400','REPS']]),
+      d('descanso','Descanso o fuerza muy ligera','',[]),
+      d('suave','Rodaje cómodo','6 km, sin buscar ritmo.',[['6 km','DIST']])
+    ]
+  },
+  { start:"2026-09-21", label:"Semana de la carrera", race:true,
+    exigente:[
+      d('suave','Rodaje muy suave','4 km, ritmo muy cómodo.',[['4 km','DIST']]),
+      d('descanso','Descanso o movilidad','',[]),
+      d('suave','Activación','3 km + 3-4 progresiones cortas.',[['3 km','DIST']]),
+      d('descanso','Descanso total','',[]),
+      d('descanso','Descanso total','Hidrátate, buena cena.',[]),
+      d('carrera','🏁 CARRERA · 15K NOCTURNA','¡A por el bracket de 1h30! Ritmo objetivo 6:00/km.',[['15 km','DIST'],['1h30','OBJETIVO']]),
+      null
+    ],
+    realista:[
+      d('suave','Rodaje muy suave','4 km ritmo muy cómodo.',[['4 km','DIST']]),
+      d('suave','Activación','3 km + un par de progresiones.',[['3 km','DIST']]),
+      d('descanso','Descanso total','',[]),
+      d('carrera','🏁 CARRERA · 15K NOCTURNA','¡A por el bracket de 1h30! Ritmo objetivo 6:00/km.',[['15 km','DIST'],['1h30','OBJETIVO']])
+    ]
+  }
+];
+
+let mode = 'exigente';
+let activeWeek = 0;
+
+const STORAGE_KEY = 'plan15k-progress-v1';
+let progress = {};
+let memoryOnly = false;
+
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    progress = raw ? JSON.parse(raw) : {};
+  }catch(e){
+    memoryOnly = true;
+    progress = {};
+  }
+}
+
+function saveProgress(){
+  if(memoryOnly) return;
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  }catch(e){
+    memoryOnly = true;
+  }
+}
+
+function progressKey(weekIdx, m, sessionIdx){
+  return `w${weekIdx}_${m}_${sessionIdx}`;
+}
+
+function toggleDone(key, cardEl){
+  progress[key] = !progress[key];
+  saveProgress();
+  cardEl.classList.toggle('done', !!progress[key]);
+  renderWeekProgress();
+}
+
+function renderWeekProgress(){
+  const w = weeks[activeWeek];
+  const days = w[mode].filter(s => s && s.type !== 'descanso' && s.type !== 'carrera');
+  let done = 0;
+  w[mode].forEach((s, idx) => {
+    if(!s || s.type === 'descanso' || s.type === 'carrera') return;
+    if(progress[progressKey(activeWeek, mode, idx)]) done++;
+  });
+  document.getElementById('weekProgress').innerHTML =
+    days.length ? `<b>${done}/${days.length}</b> sesiones hechas esta semana` : '';
+}
+
+function daysBetween(a,b){ return Math.round((b-a)/(1000*60*60*24)); }
+
+function updateCountdown(){
+  const today = new Date(2026,6,24); // 24 jul 2026 fixed context date
+  const left = Math.max(0, daysBetween(today, RACE_DATE));
+  document.getElementById('daysLeft').textContent = left;
+}
+
+function renderWeekStrip(){
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
+  weeks.forEach((w,i)=>{
+    const chip = document.createElement('div');
+    chip.className = 'week-chip' + (i===activeWeek?' active':'') + (w.race?' race':'');
+    chip.innerHTML = `<div class="wn">${w.race?'🏁':i+1}</div><div class="wl">SEM</div>`;
+    chip.onclick = ()=>{ activeWeek=i; render(); };
+    strip.appendChild(chip);
+  });
+}
+
+function renderWeekTitle(){
+  const w = weeks[activeWeek];
+  const start = new Date(w.start+'T00:00:00');
+  const end = new Date(start); end.setDate(end.getDate()+6);
+  document.getElementById('weekTitle').innerHTML =
+    `Semana ${activeWeek+1} · <b>${w.label}</b> — ${fmtDate(start)} al ${fmtDate(end)}`;
+}
+
+function renderDeck(){
+  const deck = document.getElementById('deck');
+  deck.innerHTML = '';
+  const w = weeks[activeWeek];
+  const days = w[mode];
+  const start = new Date(w.start+'T00:00:00');
+  const dayNames = ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+
+  days.forEach((session, idx)=>{
+    if(!session) return;
+    const key = progressKey(activeWeek, mode, idx);
+    const isDone = !!progress[key];
+    const isTogglable = session.type !== 'descanso' && session.type !== 'carrera';
+
+    const card = document.createElement('div');
+    card.className = 'card ' + session.type + (isDone ? ' done' : '');
+
+    const dateForCard = new Date(start);
+    // exigente sessions map 1:1 to lun-dom; realista sessions are flexible, just label generically
+    let dayLabel = dayNames[idx] || '';
+    if(mode==='realista'){
+      const flexLabels = ['LUN','MIÉ','VIE','FIN DE SEMANA'];
+      dayLabel = flexLabels[idx] || dayNames[idx] || '';
+    }
+
+    let metricsHtml = '';
+    if(session.metrics && session.metrics.length){
+      metricsHtml = '<div class="metric-row">' + session.metrics.map(m=>
+        `<div class="metric"><div class="mv">${m[0]}</div><div class="ml">${m[1]}</div></div>`
+      ).join('') + '</div>';
+    }
+
+    let stevenHtml = '';
+    if(session.type === 'fuerza'){
+      stevenHtml = `
+        <div class="steven-block">
+          <span class="sv-label">Bloque de Steven <span class="sv-star">*</span></span>
+          <div class="sv-list">
+            <b>Core:</b> crunches, leg raises y mountain climbers <span class="sv-star">*</span><br>
+            <b>Pecho:</b> push-ups, dumbbell press y chest fly (o pec deck si hay máquina) <span class="sv-star">*</span>
+          </div>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="day-name">${dayLabel}</div>
+        <div class="card-top-right">
+          <div class="tag ${session.type}">${session.type}</div>
+          ${isTogglable ? `
+          <div class="check-btn" role="button" aria-label="Marcar como hecho">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>` : ''}
+        </div>
+      </div>
+      <div class="session-title">${session.title}</div>
+      <p class="session-detail">${session.detail}</p>
+      ${metricsHtml}
+      ${stevenHtml}
+    `;
+
+    if(isTogglable){
+      const btn = card.querySelector('.check-btn');
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        toggleDone(key, card);
+      });
+    }
+
+    deck.appendChild(card);
+  });
+}
+
+function render(){
+  renderWeekStrip();
+  renderWeekTitle();
+  renderDeck();
+  renderWeekProgress();
+}
+
+function setMode(m){
+  mode = m;
+  document.querySelectorAll('.toggle-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.mode===m);
+  });
+  render();
+}
+
+loadProgress();
+updateCountdown();
+render();
+</script>
+</body>
+</html>
