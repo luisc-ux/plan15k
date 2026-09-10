@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>15K Nocturna → Fin de año</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --ink:#0B1220; --paper:#EAE7DC; --paper-dim:#B9B6AC;
+    --lamp:#F2A93B; --pool:#2E9E97; --lane:#C1443B;
+    --line: rgba(234,231,220,0.14); --line-strong: rgba(234,231,220,0.28);
+    --done: #3C8F6D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{ background:var(--ink); color:var(--paper); font-family:'Inter',system-ui,sans-serif; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3,.display{ font-family:'Oswald',system-ui,sans-serif; font-weight:600; letter-spacing:0.01em; margin:0; }
+  .num{ font-family:'Roboto Mono',monospace; }
+  a{ color:var(--lamp); }
+  button, textarea, input{ font-family:inherit; }
+  .wrap{ max-width:760px; margin:0 auto; padding:0 20px 90px; }
+
+  /* NAV */
+  .topnav{
+    position:sticky; top:0; z-index:10; background:rgba(11,18,32,0.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line-strong); display:flex; gap:18px; padding:12px 20px; font-size:0.85rem;
+    overflow-x:auto; white-space:nowrap;
+  }
+  .topnav a{ color:var(--paper-dim); text-decoration:none; }
+  .topnav a:hover{ color:var(--lamp); }
+
+  /* HERO */
+  .hero{ padding:44px 20px 30px; border-bottom:1px solid var(--line-strong);
+    background: radial-gradient(circle at 15% -10%, rgba(242,169,59,0.16), transparent 55%), radial-gradient(circle at 90% 0%, rgba(46,158,151,0.12), transparent 50%); }
+  .hero-inner{ max-width:760px; margin:0 auto; }
+  .eyebrow-line{ display:flex; align-items:center; gap:10px; font-size:0.8rem; color:var(--paper-dim); margin-bottom:16px; }
+  .eyebrow-line .dot{ width:6px; height:6px; background:var(--lamp); border-radius:50%; flex:none; }
+  .hero h1{ font-size:2.2rem; line-height:1.08; }
+  .hero h1 span{ color:var(--lamp); }
+  .hero p.lede{ max-width:56ch; color:var(--paper-dim); font-size:1rem; margin-top:12px; }
+
+  .status-row{ display:flex; gap:10px; margin-top:22px; flex-wrap:wrap; }
+  .status-card{ border:1px solid var(--line-strong); padding:10px 14px; min-width:120px; }
+  .status-card .n{ font-family:'Oswald'; font-size:1.4rem; color:var(--lamp); }
+  .status-card .l{ font-size:0.72rem; color:var(--paper-dim); }
+
+  section{ padding-top:48px; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; border-bottom:1px solid var(--line-strong); padding-bottom:12px; margin-bottom:20px; gap:12px; flex-wrap:wrap; }
+  .section-head h2{ font-size:1.4rem; }
+  .section-head .tag{ font-size:0.8rem; color:var(--paper-dim); }
+  p{ color:var(--paper); }
+  p.muted{ color:var(--paper-dim); font-size:0.92rem; }
+
+  .rules{ display:grid; gap:12px; }
+  .rule{ display:grid; grid-template-columns:30px 1fr; gap:12px; border-left:2px solid var(--lamp); padding:2px 0 2px 14px; }
+  .rule .n{ font-family:'Roboto Mono'; color:var(--lamp); font-size:0.9rem; }
+  .rule h3{ font-size:0.98rem; font-weight:600; margin-bottom:2px; }
+  .rule p{ font-size:0.9rem; color:var(--paper-dim); margin:0; }
+
+  /* WEEK / DAY */
+  details.week{ border:1px solid var(--line); margin-bottom:10px; }
+  details.week summary{ cursor:pointer; list-style:none; padding:13px 16px; display:flex; justify-content:space-between; align-items:center; font-family:'Oswald'; font-size:0.98rem; }
+  details.week summary::-webkit-details-marker{ display:none; }
+  details.week summary .arrow{ color:var(--lamp); font-family:'Roboto Mono'; font-size:0.85rem; }
+  details.week[open] summary{ border-bottom:1px solid var(--line); }
+  .week-summary-meta{ font-size:0.72rem; color:var(--paper-dim); font-family:'Inter'; margin-left:8px; }
+  .week-body{ padding:4px 16px 14px; display:grid; gap:0; }
+
+  .day{ display:grid; grid-template-columns:80px 1fr; gap:12px; border-top:1px dashed var(--line); padding:12px 0; }
+  .day:first-child{ border-top:none; }
+  .day.done{ opacity:0.6; }
+  .day .d{ font-family:'Roboto Mono'; font-size:0.74rem; color:var(--paper-dim); padding-top:3px; }
+  .day .d .datenum{ display:block; color:var(--paper); font-size:0.95rem; font-family:'Oswald'; }
+  .day .content{ min-width:0; }
+  .row-top{ display:flex; align-items:flex-start; gap:10px; }
+  .chk{ width:20px; height:20px; flex:none; margin-top:2px; accent-color:var(--done); cursor:pointer; }
+  .day h4{ font-family:'Inter'; font-weight:600; font-size:0.96rem; margin:0 0 3px; }
+  .day.done h4{ text-decoration:line-through; text-decoration-color:var(--done); }
+  .day .meta{ font-size:0.84rem; color:var(--paper-dim); margin:0 0 4px; }
+  .day .spec{ font-family:'Roboto Mono'; font-size:0.8rem; color:var(--lamp); }
+  .badge{ display:inline-block; font-size:0.66rem; padding:2px 6px; border:1px solid var(--line-strong); color:var(--paper-dim); margin-left:6px; }
+  .badge.wp{ color:var(--pool); border-color:var(--pool); }
+  .badge.fuerte{ color:var(--lane); border-color:var(--lane); }
+  .badge.race{ color:var(--lamp); border-color:var(--lamp); }
+
+  details.exs{ margin-top:6px; }
+  details.exs summary{ cursor:pointer; font-size:0.8rem; color:var(--pool); list-style:none; }
+  details.exs summary::-webkit-details-marker{ display:none; }
+  details.exs summary::before{ content:'▸ '; }
+  details.exs[open] summary::before{ content:'▾ '; }
+  .ex-item{ border-left:2px solid var(--line-strong); padding:6px 0 6px 10px; margin-top:6px; }
+  .ex-item .exname{ font-size:0.88rem; font-weight:600; }
+  .ex-item .excue{ font-size:0.82rem; color:var(--paper-dim); }
+  .ex-item .exdose{ font-family:'Roboto Mono'; font-size:0.76rem; color:var(--lamp); }
+
+  textarea.note{
+    width:100%; background:rgba(234,231,220,0.05); border:1px solid var(--line); color:var(--paper);
+    font-size:0.85rem; padding:8px 10px; margin-top:8px; resize:vertical; min-height:34px; font-family:'Inter';
+  }
+  textarea.note::placeholder{ color:var(--paper-dim); }
+  .save-hint{ font-size:0.68rem; color:var(--paper-dim); opacity:0; transition:opacity 0.4s; }
+  .save-hint.show{ opacity:1; }
+
+  /* EXERCISE LIBRARY */
+  .lib-group{ margin-bottom:24px; }
+  .lib-group h3{ font-size:1rem; margin-bottom:4px; }
+  .lib-group .desc{ font-size:0.86rem; color:var(--paper-dim); margin-bottom:10px; }
+  .rot{ display:grid; gap:8px; }
+  .rot .set{ border:1px solid var(--line); padding:10px 12px; }
+  .rot .set .label{ font-family:'Roboto Mono'; font-size:0.68rem; color:var(--lamp); text-transform:uppercase; display:block; margin-bottom:4px; }
+  .ex-mini{ padding:4px 0; border-top:1px dashed var(--line); }
+  .ex-mini:first-child{ border-top:none; }
+  .ex-mini .exname{ font-size:0.88rem; font-weight:600; }
+  .ex-mini .excue{ font-size:0.8rem; color:var(--paper-dim); }
+  .ex-mini .exdose{ font-family:'Roboto Mono'; font-size:0.74rem; color:var(--pool); }
+
+  /* NUTRITION */
+  .steps{ display:grid; gap:10px; margin-bottom:26px; }
+  .step{ display:grid; grid-template-columns:34px 1fr; gap:12px; border:1px solid var(--line); padding:12px 14px; }
+  .step .n{ font-family:'Oswald'; color:var(--lamp); font-size:1.2rem; }
+  .step h4{ font-size:0.96rem; margin-bottom:3px; }
+  .step p{ font-size:0.88rem; color:var(--paper-dim); margin:0; }
+
+  .shop{ display:grid; gap:6px; margin-bottom:26px; }
+  .shop label{ display:flex; align-items:center; gap:10px; font-size:0.9rem; border-bottom:1px dashed var(--line); padding:6px 0; cursor:pointer; }
+  .shop input{ width:18px; height:18px; accent-color:var(--pool); }
+  .shop .checked{ text-decoration:line-through; color:var(--paper-dim); }
+
+  .recipe{ border:1px solid var(--line); padding:14px 16px; margin-bottom:10px; }
+  .recipe h4{ font-size:0.96rem; margin-bottom:3px; }
+  .recipe p{ font-size:0.88rem; color:var(--paper-dim); margin:3px 0; }
+
+  .mode-toggle{ display:flex; gap:0; border:1px solid var(--line-strong); width:fit-content; margin-bottom:14px; }
+  .mode-btn{ background:transparent; color:var(--paper-dim); border:none; padding:9px 16px; font-size:0.84rem; cursor:pointer; font-family:'Inter'; }
+  .mode-btn + .mode-btn{ border-left:1px solid var(--line-strong); }
+  .mode-btn.active{ background:var(--lamp); color:var(--ink); font-weight:600; }
+
+  .footer-note{ margin-top:46px; padding-top:18px; border-top:1px solid var(--line); font-size:0.8rem; color:var(--paper-dim); }
+
+  @media (max-width:480px){ .hero h1{ font-size:1.7rem; } .day{ grid-template-columns:1fr; } .day .d{ display:flex; align-items:center; gap:8px; } .day .d .datenum{ display:inline; } }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="#reglas">Reglas</a>
+  <a href="#calendario">Calendario</a>
+  <a href="#biblioteca">Ejercicios</a>
+  <a href="#nutricion">Nutrición</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow-line"><span class="dot"></span> Valencia · 15K Nocturna → temporada completa</div>
+    <h1>Plan de entrenamiento<br><span>hasta fin de año</span></h1>
+    <p class="lede">Calendario real, casilla por casilla. Marca lo que hagas, anota lo que cambies. El plan se ajusta con datos reales, no al revés.</p>
+    <div class="status-row" id="statusRow"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section id="reglas">
+    <div class="section-head"><h2>Reglas de oro</h2><span class="tag">antes de cualquier sesión</span></div>
+    <div class="rules">
+      <div class="rule"><span class="n">01</span><div><h3>Series = número fijo, no fartlek</h3><p>El ritmo se decide antes de empezar y se mantiene en todas las repeticiones. Si sale fácil, es dato para la próxima semana, no licencia para improvisar ese mismo día.</p></div></div>
+      <div class="rule"><span class="n">02</span><div><h3>Si combinas carrera y fuerza, carrera primero</h3><p>Piernas frescas para lo que exige precisión. La fuerza absorbe mejor la fatiga acumulada que la carrera de calidad.</p></div></div>
+      <div class="rule"><span class="n">03</span><div><h3>Un opcional saltado no es un fallo</h3><p>Es la válvula de seguridad del plan, no una obligación disfrazada. El rodaje largo y las series sí importan.</p></div></div>
+      <div class="rule"><span class="n">04</span><div><h3>Dinámico antes, estático después</h3><p>Estirar en frío antes de una serie afloja el músculo justo cuando lo necesitas firme.</p></div></div>
+    </div>
+  </section>
+
+  <section id="calendario">
+    <div class="section-head"><h2>Calendario</h2><span class="tag" id="phaseTag">—</span></div>
+    <p class="muted">Water polo lunes / miércoles / viernes. Toca el círculo para marcar el día como hecho, y usa la nota para registrar lo que hiciste realmente si difiere del plan.</p>
+    <div class="mode-toggle" id="modeToggle">
+      <button data-mode="realista" class="mode-btn">Realista · 4 días</button>
+      <button data-mode="exigente" class="mode-btn">Exigente · 6 días</button>
+    </div>
+    <p class="muted" style="margin-top:-6px;">En exigente, los días de water polo suman un extra suave de movilidad/core y el domingo pasa de opcional a sesión ligera fija.</p>
+    <div id="calendarRoot"></div>
+  </section>
+
+  <section id="biblioteca">
+    <div class="section-head"><h2>Biblioteca de ejercicios</h2><span class="tag">bodyweight, sin pesas</span></div>
+    <p class="muted">Tres rotaciones (A/B/C) por categoría, cambian solas cada semana. Los marcados con * son los que recomendó Steven. Cada casilla del calendario ya te dice cuáles tocan ese día — esto es la referencia completa si quieres verlo todo junto.</p>
+    <div id="libraryRoot"></div>
+  </section>
+
+  <section id="nutricion">
+    <div class="section-head"><h2>Nutrición</h2><span class="tag">batch cooking, 4 pasos</span></div>
+    <p class="muted">Una sesión de prep (60–75 min, un día fijo a la semana) te deja comida lista para 4–5 días. No es una dieta cerrada: es reducir cuántas decisiones tomas entre semana.</p>
+
+    <div class="steps">
+      <div class="step"><span class="n">1</span><div><h4>Base proteica, una sola cocción</h4><p>1kg de pechuga o muslo de pollo al horno, 200°C, 20–25 min. Sazona solo con sal, pimentón y aceite. Se corta en tiras y se reparte en táperes.</p></div></div>
+      <div class="step"><span class="n">2</span><div><h4>Base de carbohidrato, en paralelo</h4><p>Arroz o quinoa en olla grande, o boniato/patata al horno en la misma bandeja que el pollo. Se reparte en los mismos táperes.</p></div></div>
+      <div class="step"><span class="n">3</span><div><h4>Verdura de bolsa, sin cortar nada</h4><p>Bolsa de verdura ya cortada (brócoli, judía verde, pimiento), salteada o al vapor en microondas. Elimina la parte del batch cooking que más pereza da.</p></div></div>
+      <div class="step"><span class="n">4</span><div><h4>Montaje diario, 2 minutos</h4><p>Proteína + carbohidrato + verdura del táper, recalentado 2–3 min. Rota la salsa (yogur con limón, soja, tahini) para que no sepa siempre igual.</p></div></div>
+    </div>
+
+    <h3 style="font-size:1rem; margin-bottom:10px;">Lista de la compra semanal</h3>
+    <div class="shop" id="shopList"></div>
+
+    <h3 style="font-size:1rem; margin-bottom:10px;">Ajustes según el día</h3>
+    <div class="recipe"><h4>Día de rodaje largo o series duras</h4><p>Dobla la ración de arroz o patata ese día. No hace falta pesar nada — si el entrenamiento fue exigente, el cuerpo lo pide.</p></div>
+    <div class="recipe"><h4>Día de water polo</h4><p>Ración normal, pero prioriza la proteína después del entrenamiento si puedes comer en las 2 horas siguientes.</p></div>
+    <div class="recipe"><h4>Días de descanso</h4><p>Ración normal o algo más ligera de carbohidrato — no hace falta compensar comiendo menos, solo escuchar si tienes menos hambre.</p></div>
+  </section>
+
+  <div class="footer-note">
+    Plan vivo: se ajusta con datos reales (pace, FC, cómo llegas a cada sesión). Los checks y notas se guardan en este navegador (localStorage) — si cambias de móvil o borras datos del navegador, se pierden, así que si algo es importante apúntalo también en otro sitio.
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const RACE_DATE = '2026-09-26';
+  const START = '2026-08-31';
+  const END = '2026-12-31';
+
+  // ---- Sincronización opcional con Supabase ----
+  // Pega aquí la URL y la anon key de tu proyecto Supabase (Settings > API) para
+  // que el móvil y el ordenador compartan los mismos checks y notas.
+  // Si dejas esto vacío, la web sigue funcionando igual pero guarda solo en
+  // este navegador (localStorage), sin sincronizar entre dispositivos.
+  const SUPABASE_URL = '';
+  const SUPABASE_ANON_KEY = '';
+  const supa = (SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+
+  let cache = {}; // iso -> {done, note}, solo se usa cuando supa está activo
+
+  async function loadCache(){
+    if(!supa) return;
+    const { data, error } = await supa.from('plan_tracking').select('day,done,note');
+    if(error){ console.warn('Supabase read error, usando localStorage', error); return; }
+    data.forEach(r => { cache[r.day] = { done: !!r.done, note: r.note || '' }; });
+  }
+
+  function getDone(iso){
+    if(supa) return !!(cache[iso] && cache[iso].done);
+    return localStorage.getItem(storageKey(iso,'done')) === '1';
+  }
+  function getNote(iso){
+    if(supa) return (cache[iso] && cache[iso].note) || '';
+    return localStorage.getItem(storageKey(iso,'note')) || '';
+  }
+  function setDone(iso, val){
+    if(supa){
+      cache[iso] = cache[iso] || {done:false, note:''};
+      cache[iso].done = val;
+      supa.from('plan_tracking').upsert({ day: iso, done: val, note: cache[iso].note, updated_at: new Date().toISOString() })
+        .then(({error}) => { if(error) console.warn('Supabase write error', error); });
+    } else {
+      localStorage.setItem(storageKey(iso,'done'), val ? '1' : '0');
+    }
+  }
+  let noteTimers = {};
+  function setNote(iso, val){
+    if(supa){
+      cache[iso] = cache[iso] || {done:false, note:''};
+      cache[iso].note = val;
+      clearTimeout(noteTimers[iso]);
+      noteTimers[iso] = setTimeout(() => {
+        supa.from('plan_tracking').upsert({ day: iso, done: cache[iso].done, note: val, updated_at: new Date().toISOString() })
+          .then(({error}) => { if(error) console.warn('Supabase write error', error); });
+      }, 600);
+    } else {
+      localStorage.setItem(storageKey(iso,'note'), val);
+    }
+  }
+
+  const EXERCISES = {
+    core: {
+      A: [
+        {name:'Plancha frontal', cue:'Cuerpo en línea recta, abdomen apretado, no dejes caer la cadera.', dose:'3x30-40 seg'},
+        {name:'Elevaciones de piernas tumbado', cue:'Espalda pegada al suelo, baja las piernas sin que la zona lumbar se despegue.', dose:'3x12-15'},
+        {name:'Bicicleta (crunch cruzado)', cue:'Codo hacia la rodilla contraria, movimiento controlado, no tironees del cuello.', dose:'3x20 (10 por lado)'}
+      ],
+      B: [
+        {name:'Plancha lateral *', cue:'Cadera elevada y estable, cuerpo en línea recta de lado.', dose:'3x25-30 seg por lado'},
+        {name:'Dead bug', cue:'Espalda pegada al suelo, baja brazo y pierna contraria despacio.', dose:'3x10 por lado'},
+        {name:'Russian twist', cue:'Tronco ligeramente reclinado, gira desde el core no desde los brazos.', dose:'3x20 (10 por lado)'}
+      ],
+      C: [
+        {name:'Mountain climbers', cue:'Cadera baja y estable, rodillas hacia el pecho a ritmo controlado.', dose:'3x30 seg'},
+        {name:'Plancha con toque de hombro *', cue:'En plancha alta, toca el hombro contrario sin balancear la cadera.', dose:'3x16 (8 por lado)'},
+        {name:'V-ups', cue:'Si aún no llega el V-up completo, hazlo con piernas flexionadas.', dose:'3x10-12'}
+      ]
+    },
+    inferior: {
+      A: [
+        {name:'Sentadilla', cue:'Rodillas siguen la punta del pie, pecho arriba, baja hasta donde controles.', dose:'3x15'},
+        {name:'Zancada hacia adelante', cue:'Rodilla trasera casi roza el suelo, tronco vertical.', dose:'3x12 por pierna'}
+      ],
+      B: [
+        {name:'Sentadilla búlgara', cue:'Pie trasero elevado en banco, peso en la pierna delantera.', dose:'3x10-12 por pierna'},
+        {name:'Puente de glúteo a una pierna', cue:'Empuja con el talón, aprieta glúteo arriba, cadera no rota.', dose:'3x12 por pierna'}
+      ],
+      C: [
+        {name:'Zancada lateral', cue:'Empuja la cadera hacia atrás al bajar, pierna de apoyo estable.', dose:'3x12 por pierna'},
+        {name:'Step-up', cue:'Sube con control a un escalón o banco, evita impulsarte con la pierna de atrás.', dose:'3x12 por pierna'}
+      ]
+    },
+    superior: {
+      A: [
+        {name:'Flexiones estándar', cue:'Cuerpo en línea recta, codos a 45° del torso.', dose:'3x8-15 (según nivel)'},
+        {name:'Fondos de tríceps *', cue:'En banco o silla, baja hasta 90° de codo, no hundas los hombros.', dose:'3x10-12'}
+      ],
+      B: [
+        {name:'Flexiones inclinadas', cue:'Manos elevadas en un banco, más fácil que la estándar, misma técnica.', dose:'3x10-15'},
+        {name:'Pike push-up', cue:'Cadera elevada, empuja como flexión pero enfocando el hombro.', dose:'3x8-10'}
+      ],
+      C: [
+        {name:'Flexiones diamante', cue:'Manos juntas formando un diamante bajo el pecho, más exigente en tríceps.', dose:'3x6-10'},
+        {name:'Superman *', cue:'Tumbado boca abajo, eleva brazos y piernas a la vez, aguanta 2 seg arriba.', dose:'3x12'}
+      ]
+    },
+    conditioning: {
+      A: [{name:'Burpees', cue:'Ritmo constante, prioriza técnica sobre velocidad.', dose:'4x30-40 seg, 20 seg descanso'}],
+      B: [{name:'Jumping jacks', cue:'Aterriza suave, brazos y piernas coordinados.', dose:'4x30-40 seg, 20 seg descanso'}],
+      C: [{name:'High knees', cue:'Rodillas a la altura de la cadera, brazos activos.', dose:'4x30-40 seg, 20 seg descanso'}]
+    }
+  };
+
+  function isoWeekNumber(d){
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+  function rotLetter(d){ return ['A','B','C'][isoWeekNumber(d) % 3]; }
+  function fmtISO(d){ return d.toISOString().slice(0,10); }
+  function dayLabel(d){ return ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'][d.getDay()]; }
+  function shortDate(d){ return d.getDate() + ' ' + ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()]; }
+
+  const PHASES = [
+    {id:'f1', name:'Fase 1 · Recta final 15K', start:'2026-08-31', end:'2026-09-26', type:'intensa'},
+    {id:'f2', name:'Fase 2 · Descompresión', start:'2026-09-27', end:'2026-10-12', type:'suave'},
+    {id:'f3', name:'Fase 3 · Fuerza y base', start:'2026-10-13', end:'2026-11-30', type:'fuerza'},
+    {id:'f4', name:'Fase 4 · Mantenimiento', start:'2026-12-01', end:'2026-12-31', type:'suave'}
+  ];
+  function phaseFor(dateStr){
+    return PHASES.find(p => dateStr >= p.start && dateStr <= p.end) || PHASES[PHASES.length-1];
+  }
+
+  function daysToRace(d){ return Math.round((new Date(RACE_DATE) - d) / 86400000); }
+
+  let MODE = localStorage.getItem('plan15k:mode') || 'realista';
+  function isExigente(){ return MODE === 'exigente'; }
+
+  // Build a day's workout definition
+  function buildDay(d){
+    const iso = fmtISO(d);
+    const wd = d.getDay(); // 0 Sun .. 6 Sat
+    const phase = phaseFor(iso);
+    const rot = rotLetter(d);
+    const dtr = daysToRace(d);
+
+    if(iso === RACE_DATE){
+      return {kind:'race', title:'Carrera: 15K Nocturna Valencia', meta:'Objetivo 6:00/km · bracket 1h30', badge:'race', exs:null};
+    }
+
+    // Water polo fixed days
+    if([1,3,5].includes(wd)){
+      if(isExigente()){
+        return {kind:'wp', title:'Water polo + extra suave', meta:'Water polo por la tarde. Añade 10 min de movilidad/core suave, antes o después, sin buscar intensidad.', badge:'wp', exs:[['core', rot, 1]]};
+      }
+      return {kind:'wp', title:'Water polo', meta:'Día de descanso de piernas fuera del agua.', badge:'wp', exs:null};
+    }
+
+    if(phase.id === 'f1'){
+      if(wd===2){ // Tue - series
+        if(dtr>=1 && dtr<=5) return {kind:'series', title:'Series de activación', meta:'4x200m suave, foco en técnica no en ritmo', badge:'fuerte', exs:null};
+        return {kind:'series', title:'Series', meta:'5x800m · descanso 2 min trote suave', spec:'10,5–11,5 km/h · cinta 0–0,5%', badge:'fuerte', exs:null};
+      }
+      if(wd===4){ return {kind:'strength', title:'Fuerza + core', meta:'Bloque corto, 15-20 min', badge:'fuerte', exs:[['core',rot,3],['conditioning',rot,1]]}; }
+      if(wd===6){ // Sat long run
+        if(dtr>=1 && dtr<=5) return {kind:'long', title:'Rodaje corto de activación', meta:'4-5km muy suave, nada de ritmo objetivo', badge:'', exs:null};
+        return {kind:'long', title:'Rodaje largo', meta:'', spec:'6:20–6:40/km · 11–12 km', badge:'', exs:null};
+      }
+      if(wd===0){
+        if(isExigente()) return {kind:'easy', title:'Trote suave (fijo)', meta:'5-6km a ritmo cómodo, sin buscar nada más', badge:'', exs:null};
+        return {kind:'optional', title:'Opcional', meta:'Trote suave 5-6km o descanso total', badge:'', exs:null};
+      }
+    }
+
+    if(phase.id === 'f2'){
+      if(wd===2){ return {kind:'easy', title:'Trote muy suave', meta:'20-30 min, sin objetivo de ritmo', badge:'', exs:null}; }
+      if(wd===4){ return {kind:'strength', title:'Movilidad + core ligero', meta:'Sesión suave, sin exigencia', badge:'', exs:[['core',rot,2]]}; }
+      if(wd===6){ return {kind:'easy', title:'Trote suave', meta:'30-40 min, ritmo cómodo', badge:'', exs:null}; }
+      if(wd===0){
+        if(isExigente()) return {kind:'easy', title:'Trote muy suave (fijo)', meta:'20 min, sin objetivo de ritmo', badge:'', exs:null};
+        return {kind:'rest', title:'Descanso o paseo', meta:'Estiramiento suave si te apetece', badge:'', exs:null};
+      }
+    }
+
+    if(phase.id === 'f3'){
+      if(wd===2){ return {kind:'combo', title:'Carrera + core', meta:'30 min trote a ritmo cómodo', badge:'fuerte', exs:[['core',rot,2]]}; }
+      if(wd===4){ return {kind:'strength', title:'Fuerza completa', meta:'25-30 min: tren inferior + superior + core', badge:'fuerte', exs:[['inferior',rot,2],['superior',rot,2],['core',rot,2]]}; }
+      if(wd===6){ return {kind:'combo', title:'Carrera + core', meta:'40-50 min a ritmo cómodo', badge:'fuerte', exs:[['core',rot,2]]}; }
+      if(wd===0){
+        if(isExigente()) return {kind:'strength', title:'Fuerza suave (fijo)', meta:'Movilidad + circuito ligero', badge:'', exs:[['core',rot,1]]};
+        return {kind:'strength', title:'Fuerza suave o descanso', meta:'Movilidad + circuito ligero, opcional', badge:'', exs:[['core',rot,1]]};
+      }
+    }
+
+    if(phase.id === 'f4'){
+      if(wd===2){ return {kind:'combo', title:'Carrera o fuerza libre', meta:'20-30 min, lo que apetezca más ese día', badge:'', exs:[['core',rot,1]]}; }
+      if(wd===4){ return {kind:'strength', title:'Fuerza básica', meta:'15-20 min', badge:'', exs:[['inferior',rot,1],['core',rot,1]]}; }
+      if(wd===6){ return {kind:'easy', title:'Carrera suave', meta:'30-40 min, opcional', badge:'', exs:null}; }
+      if(wd===0){
+        if(isExigente()) return {kind:'easy', title:'Trote suave (fijo)', meta:'20-30 min, opcional bajar a paseo si hace falta', badge:'', exs:null};
+        return {kind:'rest', title:'Descanso', meta:'', badge:'', exs:null};
+      }
+    }
+
+    return {kind:'rest', title:'Descanso', meta:'', badge:'', exs:null};
+  }
+
+  function exBlockHTML(exs){
+    if(!exs) return '';
+    let items = [];
+    exs.forEach(([cat, rot, n]) => {
+      const pool = EXERCISES[cat][rot].slice(0, n);
+      pool.forEach(ex => items.push(ex));
+    });
+    const inner = items.map(ex => `
+      <div class="ex-item">
+        <div class="exname">${ex.name}</div>
+        <div class="excue">${ex.cue}</div>
+        <div class="exdose">${ex.dose}</div>
+      </div>`).join('');
+    return `<details class="exs"><summary>Ver ejercicios</summary>${inner}</details>`;
+  }
+
+  function storageKey(iso, field){ return 'plan15k:' + iso + ':' + field; }
+
+  function dayRowHTML(d){
+    const iso = fmtISO(d);
+    const def = buildDay(d);
+    const badgeHTML = def.badge ? `<span class="badge ${def.badge}">${def.badge==='wp'?'WP':def.badge==='race'?'CARRERA':'fuerte'}</span>` : '';
+    const specHTML = def.spec ? `<div class="spec">${def.spec}</div>` : '';
+    const exHTML = exBlockHTML(def.exs);
+    return `
+      <div class="day" data-iso="${iso}">
+        <div class="d"><span class="datenum">${d.getDate()}</span>${dayLabel(d)}</div>
+        <div class="content">
+          <div class="row-top">
+            <input type="checkbox" class="chk" data-key="${storageKey(iso,'done')}">
+            <div style="flex:1; min-width:0;">
+              <h4>${def.title}${badgeHTML}</h4>
+              ${def.meta ? `<div class="meta">${def.meta}</div>` : ''}
+              ${specHTML}
+              ${exHTML}
+              <textarea class="note" placeholder="Notas: qué hiciste realmente si difiere del plan..." data-key="${storageKey(iso,'note')}"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function buildCalendar(){
+    const root = document.getElementById('calendarRoot');
+    const start = new Date(START + 'T00:00:00');
+    const end = new Date(END + 'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    // align to Monday of start week
+    let cursor = new Date(start);
+    const dow = cursor.getDay() || 7;
+    cursor.setDate(cursor.getDate() - (dow - 1));
+
+    let html = '';
+    let weekIndex = 0;
+    let todayWeekIso = null;
+
+    while(cursor <= end){
+      const weekStart = new Date(cursor);
+      const weekDays = [];
+      for(let i=0;i<7;i++){
+        const d = new Date(cursor);
+        if(d >= start && d <= end) weekDays.push(d);
+        cursor.setDate(cursor.getDate()+1);
+      }
+      if(weekDays.length){
+        const wStart = weekDays[0], wEnd = weekDays[weekDays.length-1];
+        const isCurrent = today >= weekStart && today < new Date(weekStart.getTime()+7*86400000);
+        if(isCurrent) todayWeekIso = fmtISO(wStart);
+        const phase = phaseFor(fmtISO(wEnd));
+        html += `<details class="week" data-week="${fmtISO(wStart)}" ${isCurrent?'open':''}>
+          <summary>${shortDate(wStart)} – ${shortDate(wEnd)} <span class="arrow">${isCurrent?'▾':'▸'}</span><span class="week-summary-meta">${phase.name}</span></summary>
+          <div class="week-body">${weekDays.map(dayRowHTML).join('')}</div>
+        </details>`;
+      }
+    }
+    root.innerHTML = html;
+
+    // wire up checkboxes/notes via storage abstraction (Supabase o localStorage)
+    root.querySelectorAll('.chk').forEach(chk => {
+      const iso = chk.closest('.day').dataset.iso;
+      chk.checked = getDone(iso);
+      if(chk.checked) chk.closest('.day').classList.add('done');
+      chk.addEventListener('change', () => {
+        setDone(iso, chk.checked);
+        chk.closest('.day').classList.toggle('done', chk.checked);
+        updateStatus();
+      });
+    });
+    root.querySelectorAll('.note').forEach(ta => {
+      const iso = ta.closest('.day').dataset.iso;
+      const saved = getNote(iso);
+      if(saved) ta.value = saved;
+      ta.addEventListener('input', () => { setNote(iso, ta.value); });
+    });
+  }
+
+  function updateStatus(){
+    const start = new Date(START + 'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dtr = daysToRace(today);
+    const phase = phaseFor(fmtISO(today) < START ? START : fmtISO(today));
+
+    let done = 0, elapsed = 0;
+    let d = new Date(start);
+    while(d <= today && fmtISO(d) <= END){
+      elapsed++;
+      if(getDone(fmtISO(d))) done++;
+      d.setDate(d.getDate()+1);
+    }
+
+    document.getElementById('phaseTag').textContent = phase.name;
+    document.getElementById('statusRow').innerHTML = `
+      <div class="status-card"><div class="n">${dtr >= 0 ? dtr : '—'}</div><div class="l">días para la carrera</div></div>
+      <div class="status-card"><div class="n">${elapsed>0?done:'—'}/${elapsed>0?elapsed:'—'}</div><div class="l">días marcados hasta hoy</div></div>
+      <div class="status-card"><div class="n">${phase.name.split('·')[0].trim()}</div><div class="l">fase actual</div></div>
+    `;
+  }
+
+  function buildLibrary(){
+    const root = document.getElementById('libraryRoot');
+    const groups = [
+      ['core','Core', 'El bloque que más quieres reforzar. 3 series de cada ejercicio elegido.'],
+      ['inferior','Tren inferior', '3 series de 10-15 reps por pierna donde aplique.'],
+      ['superior','Tren superior', '3 series de 6-15 reps según variante.'],
+      ['conditioning','Conditioning / metabólico', 'Para cerrar el bloque con pulso alto.']
+    ];
+    let html = '';
+    groups.forEach(([cat, label, desc]) => {
+      html += `<div class="lib-group"><h3>${label}</h3><div class="desc">${desc}</div><div class="rot">`;
+      ['A','B','C'].forEach(letter => {
+        html += `<div class="set"><span class="label">Rotación ${letter}</span>`;
+        EXERCISES[cat][letter].forEach(ex => {
+          html += `<div class="ex-mini"><div class="exname">${ex.name}</div><div class="excue">${ex.cue}</div><div class="exdose">${ex.dose}</div></div>`;
+        });
+        html += `</div>`;
+      });
+      html += `</div></div>`;
+    });
+    html += `<p class="star-note" style="font-size:0.82rem; color:var(--paper-dim);">* Ejercicios sugeridos por Steven, integrados en las rotaciones de core y tren superior.</p>`;
+    root.innerHTML = html;
+  }
+
+  function buildShopList(){
+    const items = [
+      'Pechuga o muslo de pollo (1-1.5kg)',
+      'Arroz o quinoa',
+      'Boniato o patata',
+      'Bolsa de verdura ya cortada (brócoli, judía verde, pimiento)',
+      'Yogur natural (para la salsa)',
+      'Limón',
+      'Salsa de soja',
+      'Tahini o crema de cacahuete',
+      'Aceite de oliva',
+      'Ajo en polvo y pimentón',
+      'Táperes (6-8 si no tienes ya)'
+    ];
+    const root = document.getElementById('shopList');
+    root.innerHTML = items.map((it,i) => `
+      <label data-key="plan15k:shop:${i}">
+        <input type="checkbox" class="shopchk" data-key="plan15k:shop:${i}"> <span class="shoptxt">${it}</span>
+      </label>`).join('');
+    root.querySelectorAll('.shopchk').forEach(chk => {
+      const key = chk.dataset.key;
+      chk.checked = localStorage.getItem(key) === '1';
+      chk.closest('label').querySelector('.shoptxt').classList.toggle('checked', chk.checked);
+      chk.addEventListener('change', () => {
+        localStorage.setItem(key, chk.checked ? '1':'0');
+        chk.closest('label').querySelector('.shoptxt').classList.toggle('checked', chk.checked);
+      });
+    });
+  }
+
+  function wireModeToggle(){
+    const btns = document.querySelectorAll('.mode-btn');
+    btns.forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === MODE);
+      b.addEventListener('click', () => {
+        MODE = b.dataset.mode;
+        localStorage.setItem('plan15k:mode', MODE);
+        btns.forEach(x => x.classList.toggle('active', x.dataset.mode === MODE));
+        buildCalendar();
+        updateStatus();
+      });
+    });
+  }
+
+  async function init(){
+    await loadCache();
+    buildCalendar();
+    buildLibrary();
+    buildShopList();
+    updateStatus();
+    wireModeToggle();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
