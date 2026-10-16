@@ -95,6 +95,9 @@
   .ex-item .exname{ font-size:0.88rem; font-weight:600; }
   .ex-item .excue{ font-size:0.82rem; color:var(--paper-dim); }
   .ex-item .exdose{ font-family:'Roboto Mono'; font-size:0.76rem; color:var(--lamp); }
+  .variants{ margin:6px 0 0; padding:0; list-style:none; }
+  .variants li{ font-size:0.8rem; color:var(--paper-dim); padding:2px 0; }
+  .variants li b{ color:var(--paper); font-weight:600; }
 
   textarea.note{
     width:100%; background:rgba(234,231,220,0.05); border:1px solid var(--line); color:var(--paper);
@@ -116,6 +119,7 @@
   .ex-mini .exname{ font-size:0.88rem; font-weight:600; }
   .ex-mini .excue{ font-size:0.8rem; color:var(--paper-dim); }
   .ex-mini .exdose{ font-family:'Roboto Mono'; font-size:0.74rem; color:var(--pool); }
+  .ex-mini .variants li{ font-size:0.78rem; }
 
   /* NUTRITION */
   .steps{ display:grid; gap:10px; margin-bottom:26px; }
@@ -180,7 +184,7 @@
       <button data-mode="realista" class="mode-btn">Realista · 4 días</button>
       <button data-mode="exigente" class="mode-btn">Exigente · 6 días</button>
     </div>
-    <p class="muted" style="margin-top:-6px;">Water polo ya no es solo descanso: lunes es empuje (pecho/hombro), miércoles tirón (espalda/bíceps), viernes glúteo y core. En exigente el bloque es más completo; en realista es más corto pero sigue estando ahí. El domingo también cambia entre las dos.</p>
+    <p class="muted" style="margin-top:-6px;">5 días fijos + 2 totalmente libres: lunes (WP) empuje, martes potencia de water polo, miércoles (WP) tirón, jueves pierna+brazos, viernes (WP) glúteo. Sábado y domingo son tuyos — corre al aire libre, repite algo o descansa. Calienta como te apetezca (remo, escaladora, bici o carrera) antes de cada bloque. Cada ejercicio trae su opción en máquina, mancuerna/kettlebell y bodyweight.</p>
     <div id="calendarRoot"></div>
   </section>
 
@@ -279,103 +283,156 @@
     core: {
       A: [
         {name:'Plancha con elevación de pierna', cue:'Plancha frontal normal, levanta una pierna sin que la cadera rote.', dose:'3x12 por lado'},
-        {name:'Elevaciones de piernas tumbado', cue:'Espalda pegada al suelo, baja las piernas sin que la zona lumbar se despegue.', dose:'3x15'},
+        {name:'Elevaciones de piernas', cue:'Tumbado o colgado de una barra si hay.', dose:'3x15',
+          variants:[{equip:'Máquina', text:'Elevación de piernas en silla romana (captain\'s chair), si tu gimnasio tiene.'},{equip:'Colgado', text:'En barra de dominadas, eleva rodillas al pecho.'},{equip:'Bodyweight', text:'Tumbado en el suelo, espalda pegada, baja sin que despegue la lumbar.'}]},
         {name:'Bicicleta lenta', cue:'Codo hacia la rodilla contraria, cuanto más lento más exige el core.', dose:'3x20 (10 por lado)'}
       ],
       B: [
         {name:'Plancha lateral con elevación de cadera *', cue:'Desde plancha lateral, sube y baja la cadera sin perder la línea.', dose:'3x12 por lado'},
-        {name:'Dead bug con carga ligera', cue:'Espalda pegada al suelo; sujeta una garrafa pequeña o mancuerna con las manos si quieres más exigencia.', dose:'3x10 por lado'},
+        {name:'Giro de tronco (oblicuos)', cue:'Gira desde el core, no desde los brazos.', dose:'3x15 por lado',
+          variants:[{equip:'Máquina/Polea', text:'Woodchopper en polea, de arriba a abajo cruzando el cuerpo.'},{equip:'Kettlebell', text:'Russian twist sujetando una kettlebell o disco con ambas manos.'},{equip:'Bodyweight', text:'Russian twist sin carga, tronco reclinado.'}]},
         {name:'V-ups', cue:'Si aún no llega el V-up completo, hazlo con piernas flexionadas.', dose:'3x12-15'}
       ],
       C: [
         {name:'Mountain climbers rápidos', cue:'Cadera baja y estable, ritmo alto, no dejes que suba el culo.', dose:'3x40 seg'},
         {name:'Plancha con toque de hombro + rotación *', cue:'En plancha alta, toca el hombro contrario y añade una pequeña rotación de cadera.', dose:'3x16 (8 por lado)'},
-        {name:'Elevación de piernas colgado', cue:'Si tienes barra de dominadas, cuelga y eleva rodillas al pecho. Si no, hazlo tumbado.', dose:'3x12'}
+        {name:'Crunch abdominal', cue:'Controla la subida, no tires del cuello.', dose:'3x15-20',
+          variants:[{equip:'Máquina', text:'Máquina de abdominales (ab crunch machine), ajusta el peso bajo.'},{equip:'Bodyweight', text:'Crunch en el suelo, manos en las sienes sin empujar el cuello.'}]}
       ]
     },
     piernas: {
       A: [
-        {name:'Sentadilla (o goblet squat)', cue:'Rodillas siguen la punta del pie, pecho arriba. Añade una kettlebell, mancuerna o garrafa pegada al pecho para más carga.', dose:'3x15-20'},
-        {name:'Zancada hacia adelante', cue:'Rodilla trasera casi roza el suelo, tronco vertical.', dose:'3x12 por pierna'}
+        {name:'Sentadilla / press de pierna', cue:'Movimiento base de pierna, elige la variante que tengas disponible.', dose:'4x12-15',
+          variants:[{equip:'Máquina', text:'Prensa de piernas (leg press): pies a la altura de los hombros, baja controlado.'},{equip:'Kettlebell/Mancuerna', text:'Goblet squat: carga pegada al pecho, pecho arriba.'},{equip:'Bodyweight', text:'Sentadilla normal, rodillas siguen la punta del pie.'}]},
+        {name:'Zancada hacia adelante', cue:'Rodilla trasera casi roza el suelo, tronco vertical. Con mancuernas en las manos si quieres carga.', dose:'3x12 por pierna'}
       ],
       B: [
-        {name:'Sentadilla búlgara', cue:'Pie trasero elevado en banco, peso en la pierna delantera. Con garrafas en las manos si quieres más carga.', dose:'3x12 por pierna'},
+        {name:'Extensión de cuádriceps', cue:'Controla la bajada, no dejes caer el peso.', dose:'3x12-15',
+          variants:[{equip:'Máquina', text:'Máquina de extensión de cuádriceps (leg extension).'},{equip:'Bodyweight', text:'Sentadilla búlgara, pie trasero elevado en un banco.'}]},
         {name:'Zancada lateral', cue:'Empuja la cadera hacia atrás al bajar, pierna de apoyo estable.', dose:'3x12 por pierna'}
       ],
       C: [
-        {name:'Step-up cargado', cue:'Sube con control a un escalón o banco, garrafa o mancuerna en cada mano.', dose:'3x12 por pierna'},
-        {name:'Sentadilla salto (o wall ball)', cue:'Si el gimnasio tiene balón medicinal, lanza contra la pared al subir. Si no, sentadilla con salto normal.', dose:'3x12-15'}
+        {name:'Step-up cargado', cue:'Sube con control a un escalón o banco, mancuerna o kettlebell en cada mano.', dose:'3x12 por pierna'},
+        {name:'Sentadilla con salto / wall ball', cue:'Explosivo al subir.', dose:'3x12-15',
+          variants:[{equip:'Wall ball', text:'Si el gimnasio tiene balón medicinal, lanza contra la pared al subir.'},{equip:'Bodyweight', text:'Sentadilla con salto normal, aterriza suave.'}]}
       ]
     },
     gluteos: {
       A: [
-        {name:'Hip thrust a una pierna', cue:'Espalda apoyada en un banco, empuja con el talón, aprieta glúteo arriba.', dose:'3x12 por lado'},
-        {name:'Puente de glúteo con pausa', cue:'Aguanta 2 seg arriba apretando fuerte antes de bajar.', dose:'3x15'},
-        {name:'Patada de glúteo (donkey kick)', cue:'A cuatro patas, empuja el talón hacia el techo sin arquear la espalda.', dose:'3x15 por lado'}
+        {name:'Hip thrust', cue:'Empuja con el talón, aprieta glúteo arriba, aguanta 1-2 seg.', dose:'4x12-15',
+          variants:[{equip:'Máquina', text:'Máquina de hip thrust / glúteo si tu gimnasio tiene.'},{equip:'Mancuerna/Barra', text:'Espalda apoyada en banco, barra o mancuerna sobre la cadera.'},{equip:'Bodyweight', text:'Puente de glúteo a una pierna en el suelo.'}]},
+        {name:'Patada de glúteo (donkey kick)', cue:'A cuatro patas, empuja el talón hacia el techo sin arquear la espalda.', dose:'3x15 por lado',
+          variants:[{equip:'Máquina/Polea', text:'Patada de glúteo en polea baja, tobillera puesta.'},{equip:'Bodyweight', text:'A cuatro patas en el suelo, sin carga.'}]}
       ],
       B: [
-        {name:'Zancada búlgara enfocada a glúteo', cue:'Inclina el tronco ligeramente adelante y empuja con el talón, no con la punta.', dose:'3x12 por lado'},
-        {name:'Hip thrust cargado', cue:'Garrafa, mochila con peso o kettlebell sobre la cadera.', dose:'3x15'},
-        {name:'Almeja (clamshell)', cue:'De lado, rodillas flexionadas, abre la rodilla superior sin mover la cadera.', dose:'3x15 por lado'}
+        {name:'Zancada búlgara enfocada a glúteo', cue:'Inclina el tronco ligeramente adelante y empuja con el talón, no con la punta. Mancuernas en las manos para más carga.', dose:'3x12 por lado'},
+        {name:'Abducción de cadera', cue:'Controla, no uses impulso.', dose:'3x15 por lado',
+          variants:[{equip:'Máquina', text:'Máquina de abductores (hip abduction).'},{equip:'Bodyweight', text:'Almeja (clamshell) tumbado de lado, o patada lateral a cuatro patas.'}]}
       ],
       C: [
-        {name:'Peso muerto rumano a una pierna', cue:'Con o sin garrafa en la mano, bisagra de cadera, espalda recta, rodilla de apoyo semiflexionada.', dose:'3x10 por lado'},
-        {name:'Puente de glúteo pies elevados', cue:'Pies sobre un banco o silla, más rango de movimiento.', dose:'3x15'},
-        {name:'Patada lateral (fire hydrant)', cue:'A cuatro patas, eleva la rodilla hacia el lateral manteniendo el ángulo.', dose:'3x15 por lado'}
+        {name:'Peso muerto rumano a una pierna', cue:'Bisagra de cadera, espalda recta, rodilla de apoyo semiflexionada.', dose:'3x10 por lado',
+          variants:[{equip:'Mancuerna/Kettlebell', text:'Con una mancuerna o kettlebell en la mano contraria a la pierna de apoyo.'},{equip:'Bodyweight', text:'Sin carga, brazos extendidos al frente para equilibrio.'}]},
+        {name:'Puente de glúteo pies elevados', cue:'Pies sobre un banco o silla, más rango de movimiento.', dose:'3x15'}
       ]
     },
     pecho: {
       A: [
-        {name:'Flexiones estándar', cue:'Cuerpo en línea recta, codos a 45° del torso. Sube reps o añade pausa abajo cuando sea fácil.', dose:'4x15-20'},
-        {name:'Fondos en paralelas o banco *', cue:'En paralelas del gimnasio o entre dos sillas en casa, baja hasta 90° de codo.', dose:'4x10-15'},
-        {name:'Flexión con pies elevados', cue:'Pies en un banco o silla, más trabajo de pecho superior.', dose:'3x12-15'}
+        {name:'Press horizontal de pecho', cue:'Movimiento base de empuje horizontal.', dose:'4x10-12',
+          variants:[{equip:'Máquina', text:'Press de pecho en máquina: ajusta el asiento a la altura del pecho, empuja sin bloquear codos del todo.'},{equip:'Mancuerna', text:'Press con mancuernas en banco plano, codos a 45°.'},{equip:'Kettlebell', text:'Press de kettlebell a un brazo, tumbado, más exigencia de estabilidad.'},{equip:'Bodyweight', text:'Flexiones, cuerpo en línea recta.'}]},
+        {name:'Fondos de tríceps/pecho *', cue:'Baja hasta 90° de codo, no hundas los hombros.', dose:'4x10-15',
+          variants:[{equip:'Máquina', text:'Máquina de fondos asistidos (assisted dip machine).'},{equip:'Bodyweight', text:'En paralelas del gimnasio o entre dos bancos.'}]}
       ],
       B: [
-        {name:'Flexión con pausa 2 seg abajo', cue:'Mismo movimiento que la estándar, pero aguanta 2 seg pegado al suelo antes de subir.', dose:'3x12'},
-        {name:'Press con garrafa/mancuerna tumbado', cue:'Tumbado en el suelo o banco, empuja hacia arriba como un press de banca.', dose:'3x12-15'},
-        {name:'Fondos en paralelas, tempo lento', cue:'Baja en 3 segundos, sube explosivo.', dose:'3x8-12'}
+        {name:'Aislamiento de pecho', cue:'Abre los brazos hasta sentir estiramiento, junta controlado.', dose:'3x12-15',
+          variants:[{equip:'Máquina', text:'Pec deck / contractor de pecho.'},{equip:'Mancuerna', text:'Aperturas con mancuerna en banco plano.'},{equip:'Bodyweight', text:'Flexión con manos muy abiertas, más énfasis en pecho.'}]},
+        {name:'Press inclinado', cue:'Mismo press pero con banco inclinado, trabaja más pecho superior.', dose:'3x10-12',
+          variants:[{equip:'Máquina', text:'Press inclinado en máquina si está disponible.'},{equip:'Mancuerna', text:'Press con mancuernas en banco inclinado 30-45°.'},{equip:'Bodyweight', text:'Flexión con pies elevados en un banco.'}]}
       ],
       C: [
-        {name:'Flexión pliométrica (con palmada)', cue:'Empuja con fuerza para despegar las manos del suelo. Si aún no llega, flexión explosiva sin despegar.', dose:'4x8-10'},
-        {name:'Flexión diamante', cue:'Manos juntas formando un diamante bajo el pecho, más exigente en tríceps.', dose:'3x8-12'},
-        {name:'Press con garrafa a una mano', cue:'Tumbado, un lado a la vez, controla que el tronco no rote.', dose:'3x12 por lado'}
+        {name:'Press horizontal (variante explosiva)', cue:'Sube con fuerza controlada.', dose:'4x8-10',
+          variants:[{equip:'Mancuerna', text:'Press con mancuernas, tempo rápido en la subida, 3 seg en la bajada.'},{equip:'Bodyweight', text:'Flexión pliométrica (con palmada) si llegas, si no, explosiva sin despegar manos.'}]},
+        {name:'Flexión diamante', cue:'Manos juntas formando un diamante bajo el pecho, más exigente en tríceps.', dose:'3x8-12'}
       ]
     },
     espalda: {
       A: [
-        {name:'Dominadas o remo invertido en barra baja', cue:'Si no llegas a dominada completa, usa una barra baja y haz el cuerpo casi horizontal.', dose:'4x8-12 (o al fallo)'},
-        {name:'Curl de bíceps con garrafa/mancuerna', cue:'Codo pegado al cuerpo, sube sin balancear el tronco.', dose:'3x15'},
-        {name:'Remo invertido, pies elevados', cue:'Sube la dificultad apoyando los pies en un banco.', dose:'3x10-12'}
+        {name:'Jalón / dominada', cue:'Tira hacia la clavícula, no hacia el cuello, controla la vuelta.', dose:'4x10-12',
+          variants:[{equip:'Máquina', text:'Jalón al pecho (lat pulldown) en polea alta.'},{equip:'Bodyweight', text:'Dominadas, o remo invertido en barra baja si aún no llegas a dominada completa.'}]},
+        {name:'Curl de bíceps', cue:'Codo pegado al cuerpo, sube sin balancear el tronco.', dose:'3x12-15',
+          variants:[{equip:'Máquina/Polea', text:'Curl en polea o máquina de bíceps.'},{equip:'Mancuerna/Kettlebell', text:'Curl alterno con mancuernas o kettlebell.'}]}
       ],
       B: [
-        {name:'Remo a una mano con kettlebell/garrafa', cue:'Apoya una mano y rodilla en un banco, tira del codo hacia atrás pegado al cuerpo.', dose:'3x12 por lado'},
-        {name:'Dominadas supinas (chin-ups) *', cue:'Palmas hacia ti, más ayuda del bíceps. Si no llegas, negativas lentas desde arriba.', dose:'3x6-10'},
-        {name:'Curl martillo con garrafa', cue:'Muñeca neutra, sube sin mover el codo del sitio.', dose:'3x15'}
+        {name:'Remo horizontal', cue:'Tira con los codos, pecho arriba, aprieta omóplatos al final.', dose:'4x10-12',
+          variants:[{equip:'Máquina', text:'Remo en máquina sentado, pecho apoyado si la tiene.'},{equip:'Mancuerna/Kettlebell', text:'Remo a una mano apoyando mano y rodilla en un banco.'},{equip:'Bodyweight', text:'Remo invertido con toalla anclada en el marco de una puerta.'}]},
+        {name:'Dominadas supinas (chin-ups) *', cue:'Palmas hacia ti, más ayuda del bíceps. Si no llegas, negativas lentas desde arriba.', dose:'3x6-10'}
       ],
       C: [
-        {name:'Remo invertido con toalla en puerta', cue:'Ancla una toalla resistente en el marco de una puerta, inclínate hacia atrás y tira. Para cuando no tienes barra.', dose:'3x12-15'},
-        {name:'Superman con brazos extendidos', cue:'Tumbado boca abajo, eleva brazos y piernas a la vez, aguanta 2 seg arriba.', dose:'3x15'},
-        {name:'Curl de bíceps a una mano', cue:'Garrafa o mancuerna, controla la bajada más que la subida.', dose:'3x12 por lado'}
+        {name:'Extensión lumbar', cue:'Sube hasta que la espalda quede recta, no más arriba, evita hiperextender.', dose:'3x12-15',
+          variants:[{equip:'Máquina', text:'Banco romano de hiperextensiones, si tu gimnasio tiene.'},{equip:'Bodyweight', text:'Superman en el suelo, eleva brazos y piernas a la vez.'}]},
+        {name:'Curl martillo', cue:'Muñeca neutra, sube sin mover el codo del sitio.', dose:'3x15',
+          variants:[{equip:'Mancuerna/Kettlebell', text:'Con mancuerna o asa de kettlebell.'}]}
       ]
     },
     hombros: {
       A: [
-        {name:'Pike push-up', cue:'Cadera elevada formando una V invertida, empuja como flexión enfocando el hombro.', dose:'3x10-12'},
-        {name:'Elevaciones laterales con garrafa/mancuerna', cue:'Brazos casi rectos, sube hasta la altura del hombro, sin impulso.', dose:'3x15'}
+        {name:'Press de hombro', cue:'Empuja recto hacia arriba, core apretado, no arquees la espalda.', dose:'3x10-12',
+          variants:[{equip:'Máquina', text:'Press de hombro en máquina, sentado.'},{equip:'Mancuerna/Kettlebell', text:'Press militar de pie o sentado.'},{equip:'Bodyweight', text:'Pike push-up, cadera elevada en V invertida.'}]},
+        {name:'Elevaciones laterales', cue:'Brazos casi rectos, sube hasta la altura del hombro, sin impulso.', dose:'3x15',
+          variants:[{equip:'Máquina', text:'Máquina de elevación lateral (lateral raise machine).'},{equip:'Mancuerna/Kettlebell', text:'Con mancuernas ligeras o kettlebells pequeñas.'}]}
       ],
       B: [
-        {name:'Press militar con garrafa/mancuerna', cue:'De pie o sentado, empuja recto hacia arriba sin arquear la espalda.', dose:'3x12'},
+        {name:'Elevación frontal', cue:'Brazo recto, sube hasta la altura del hombro, controla la bajada.', dose:'3x12 por lado',
+          variants:[{equip:'Mancuerna/Kettlebell', text:'Alterna un brazo u otro.'},{equip:'Polea', text:'Polea baja, un cable por cada brazo.'}]},
         {name:'Plancha con toque de hombro', cue:'En plancha alta, toca el hombro contrario sin balancear la cadera.', dose:'3x16 (8 por lado)'}
       ],
       C: [
-        {name:'Pike push-up elevado', cue:'Pies sobre un banco, más ángulo, más exigente.', dose:'3x8-10'},
-        {name:'Elevación frontal con garrafa', cue:'Brazo recto, sube hasta la altura del hombro, controla la bajada.', dose:'3x12 por lado'}
+        {name:'Pike push-up elevado', cue:'Pies sobre un banco, más ángulo, más exigente para el hombro.', dose:'3x8-10'},
+        {name:'Face pull', cue:'Tira hacia la cara, codos altos, aprieta omóplatos.', dose:'3x15',
+          variants:[{equip:'Polea/Banda', text:'Polea con cuerda a la altura de la cara, o banda elástica anclada.'}]}
+      ]
+    },
+    brazos: {
+      A: [
+        {name:'Curl de bíceps concentrado', cue:'Codo apoyado en la pierna o en un banco, aísla el bíceps sin balanceo.', dose:'3x12-15',
+          variants:[{equip:'Máquina', text:'Curl en máquina o polea baja.'},{equip:'Mancuerna/Kettlebell', text:'Sentado, codo apoyado en el muslo.'}]},
+        {name:'Extensión de tríceps en polea', cue:'Codos pegados al cuerpo, extiende sin mover el hombro.', dose:'3x12-15',
+          variants:[{equip:'Polea', text:'Cuerda o barra en polea alta.'},{equip:'Mancuerna', text:'Extensión por encima de la cabeza con una mancuerna.'},{equip:'Bodyweight', text:'Fondos en banco, tempo lento.'}]}
+      ],
+      B: [
+        {name:'Curl martillo', cue:'Muñeca neutra, sube sin mover el codo del sitio.', dose:'3x12-15',
+          variants:[{equip:'Mancuerna/Kettlebell', text:'Alterno, un brazo cada vez.'}]},
+        {name:'Patada de tríceps (kickback)', cue:'Tronco inclinado, codo fijo arriba, extiende hacia atrás.', dose:'3x12-15 por lado',
+          variants:[{equip:'Mancuerna/Kettlebell', text:'Con mancuerna ligera o asa de kettlebell.'},{equip:'Polea', text:'Polea baja detrás de ti.'}]}
+      ],
+      C: [
+        {name:'Curl 21s (o curl normal con banda de tiempo)', cue:'7 reps abajo-medio, 7 medio-arriba, 7 completas — o curl normal lento si prefieres simple.', dose:'2x21 o 3x12'},
+        {name:'Press francés / extensión tumbado', cue:'Tumbado, codos apuntando al techo, baja hacia la frente controlado.', dose:'3x10-12',
+          variants:[{equip:'Mancuerna', text:'Una mancuerna con ambas manos, o una en cada mano.'},{equip:'Máquina', text:'Máquina de extensión de tríceps si tu gimnasio tiene.'}]}
+      ]
+    },
+    wp_power: {
+      A: [
+        {name:'Lanzamiento rotacional con balón medicinal', cue:'Gira desde la cadera, no solo desde el brazo — así se genera la potencia real de un chut.', dose:'3x10 por lado'},
+        {name:'Sentadilla con salto (potencia de pierna para el eggbeater)', cue:'Explosivo al subir, aterriza suave.', dose:'4x10-12'},
+        {name:'Rotación externa de hombro con banda', cue:'Codo pegado al cuerpo, gira hacia afuera despacio — protege el hombro del gesto de lanzar.', dose:'3x15 por lado'}
+      ],
+      B: [
+        {name:'Lanzamiento de balón medicinal por encima de cabeza (slam)', cue:'Todo el cuerpo participa, como armar el brazo para un chut potente.', dose:'3x10'},
+        {name:'Zancada con salto alterna', cue:'Explosiva, cambia de pierna en el aire.', dose:'3x10 por lado'},
+        {name:'Face pull con banda', cue:'Tira hacia la cara, codos altos — estabilidad de hombro para aguantar el volumen de lanzamientos.', dose:'3x15'}
+      ],
+      C: [
+        {name:'Russian twist con balón medicinal contra pared', cue:'Lanza y recibe el balón girando el tronco, no solo los brazos.', dose:'3x12 por lado'},
+        {name:'Burpee con salto (o salto al cajón si hay)', cue:'Máxima explosividad en el salto, técnica sobre velocidad en el resto.', dose:'4x8-10'},
+        {name:'Elevación lateral con rotación externa (banda)', cue:'Combina elevación y rotación — zona que más se usa al nadar y lanzar.', dose:'3x12 por lado'}
       ]
     },
     conditioning: {
       A: [{name:'Burpees', cue:'Ritmo constante, prioriza técnica sobre velocidad.', dose:'4x30-40 seg, 20 seg descanso'}],
-      B: [{name:'Wall balls (o sentadilla con salto)', cue:'Si el gimnasio tiene balón medicinal, lanza contra la pared al subir de la sentadilla.', dose:'4x12-15'}],
-      C: [{name:'Kettlebell swings (o skipping si no tienes)', cue:'Empuje de cadera, no es un movimiento de brazos.', dose:'4x30-40 seg, 20 seg descanso'}]
+      B: [{name:'Wall balls / sentadilla con salto', cue:'Explosivo al subir.', dose:'4x12-15',
+        variants:[{equip:'Wall ball', text:'Si el gimnasio tiene balón medicinal, lanza contra la pared al subir de la sentadilla.'},{equip:'Bodyweight', text:'Sentadilla con salto normal.'}]}],
+      C: [{name:'Kettlebell swings / skipping', cue:'Empuje de cadera, no es un movimiento de brazos.', dose:'4x30-40 seg, 20 seg descanso',
+        variants:[{equip:'Kettlebell', text:'Swing de kettlebell, bisagra de cadera.'},{equip:'Bodyweight', text:'Skipping o rodillas altas si no tienes kettlebell.'}]}]
     }
   };
 
@@ -420,17 +477,18 @@
     }
 
     // Water polo fixed days — cada día dedicado a un foco distinto, así cubres todo en la semana
+    const WARMUP = 'Calienta 15-20 min como te apetezca: remo, escaladora, bici o carrera suave. No hace falta que sea siempre lo mismo.';
     if([1,3,5].includes(wd)){
       const n = isExigente() ? 3 : 2; // volumen: exigente completo, realista algo más corto
       const kindLabel = isExigente() ? 'fijo' : 'opcional, pero recomendado';
       if(wd===1){ // Lunes — empuje: pecho, tríceps, hombro
-        return {kind:'wp', title:'Water polo + empuje (pecho/hombro)', meta:`Water polo por la tarde. Antes o después: bloque de empuje (${kindLabel}). Si te apetece, añade 6-7km de carrera suave.`, badge:'wp', exs:[['pecho',rot,n],['hombros',rot,1]]};
+        return {kind:'wp', title:'Water polo + empuje (pecho/brazos)', meta:`Water polo por la tarde. En el gimnasio: ${WARMUP} Luego bloque de empuje (${kindLabel}).`, badge:'wp', exs:[['pecho',rot,n],['hombros',rot,1]]};
       }
       if(wd===3){ // Miércoles — tirón: espalda, bíceps
-        return {kind:'wp', title:'Water polo + tirón (espalda/bíceps)', meta:`Water polo por la tarde. Antes o después: bloque de tirón (${kindLabel}). Si te apetece, añade 6-7km de carrera suave.`, badge:'wp', exs:[['espalda',rot,n]]};
+        return {kind:'wp', title:'Water polo + tirón (espalda/bíceps)', meta:`Water polo por la tarde. En el gimnasio: ${WARMUP} Luego bloque de tirón (${kindLabel}).`, badge:'wp', exs:[['espalda',rot,n]]};
       }
       // Viernes — glúteos + core
-      return {kind:'wp', title:'Water polo + glúteos y core', meta:`Water polo por la tarde. Antes o después: glúteos y core (${kindLabel}).`, badge:'wp', exs:[['gluteos',rot,n],['core',rot,1]]};
+      return {kind:'wp', title:'Water polo + glúteo y core', meta:`Water polo por la tarde. En el gimnasio: ${WARMUP} Luego glúteo y core (${kindLabel}).`, badge:'wp', exs:[['gluteos',rot,n],['core',rot,1]]};
     }
 
     if(phase.id === 'f1'){
@@ -460,13 +518,11 @@
     }
 
     if(phase.id === 'f3'){
-      if(wd===2){ return {kind:'combo', title:'Carrera + core', meta:'30 min trote a ritmo cómodo', badge:'fuerte', exs:[['core',rot,2]]}; }
-      if(wd===4){ return {kind:'strength', title:'Piernas + brazos', meta:'25-30 min: piernas + brazos (espalda/pecho ligero) + core', badge:'fuerte', exs:[['piernas',rot,2],['pecho',rot,1],['core',rot,2]]}; }
-      if(wd===6){ return {kind:'combo', title:'Carrera + core', meta:'40-50 min a ritmo cómodo', badge:'fuerte', exs:[['core',rot,2]]}; }
-      if(wd===0){
-        if(isExigente()) return {kind:'strength', title:'Fuerza suave (fijo)', meta:'Movilidad + circuito ligero', badge:'', exs:[['core',rot,1]]};
-        return {kind:'strength', title:'Fuerza suave o descanso', meta:'Movilidad + circuito ligero, opcional', badge:'', exs:[['core',rot,1]]};
-      }
+      // 5 días fijos (lun/mar/mié/jue/vie) + 2 totalmente opcionales (sáb/dom), para dejar hueco a salir a correr a la calle sin culpa.
+      if(wd===2){ return {kind:'strength', title:'Potencia WP: chut y patada', meta:`${WARMUP} Luego bloque específico de water polo: rotación de core, lanzamiento y pierna explosiva para el eggbeater.`, badge:'fuerte', exs:[['wp_power',rot,2],['core',rot,1]]}; }
+      if(wd===4){ return {kind:'strength', title:'Pierna + brazos', meta:`${WARMUP} Pierna general (el glúteo ya va el viernes) y bloque extra de brazos — aquí es donde más notarás crecer bíceps/tríceps.`, badge:'fuerte', exs:[['piernas',rot,2],['brazos',rot,2],['core',rot,1]]}; }
+      if(wd===6){ return {kind:'optional', title:'Opcional: carrera libre o extra', meta:'Día libre de verdad. Sal a correr a la calle si te apetece, repite el bloque que más quieras reforzar, o descansa — lo que pida el cuerpo.', badge:'', exs:[['core',rot,1]]}; }
+      if(wd===0){ return {kind:'optional', title:'Opcional: core + movilidad', meta:'Sin presión. Si quieres hacer algo, que sea core y estiramiento suave. Si no, descanso total.', badge:'', exs:[['core',rot,1]]}; }
     }
 
     if(phase.id === 'f4'){
@@ -494,6 +550,7 @@
         <div class="exname">${ex.name}</div>
         <div class="excue">${ex.cue}</div>
         <div class="exdose">${ex.dose}</div>
+        ${ex.variants ? `<ul class="variants">${ex.variants.map(v=>`<li><b>${v.equip}:</b> ${v.text}</li>`).join('')}</ul>` : ''}
       </div>`).join('');
     return `<details class="exs"><summary>Ver ejercicios</summary>${inner}</details>`;
   }
@@ -604,11 +661,13 @@
   function buildLibrary(){
     const root = document.getElementById('libraryRoot');
     const groups = [
-      ['pecho','Pecho, tríceps y hombro (empuje)', 'Lunes de water polo. 4 series en la mayoría, sube reps antes que peso.'],
-      ['espalda','Espalda y bíceps (tirón)', 'Miércoles de water polo. Usa barra de dominadas si tu gimnasio tiene, si no, las alternativas con toalla o garrafa.'],
+      ['pecho','Pecho, tríceps y hombro (empuje)', 'Lunes de water polo. Prioridad de crecimiento — cada ejercicio trae opción de máquina, mancuerna/kettlebell y bodyweight.'],
+      ['brazos','Brazos (bíceps/tríceps aislado)', 'Jueves, bloque extra dedicado solo a brazos — la otra prioridad de crecimiento.'],
+      ['espalda','Espalda y bíceps (tirón)', 'Miércoles de water polo. Usa barra de dominadas o jalón si tu gimnasio tiene.'],
       ['hombros','Hombro (aislado)', 'Se combina con el día de pecho para rematar el empuje.'],
-      ['gluteos','Glúteo', 'Viernes de water polo. Aquí es donde más conviene añadir carga (garrafa, kettlebell, mochila).'],
-      ['piernas','Pierna (cuádriceps)', 'Jueves, día dedicado a pierna general, complementa al de glúteo.'],
+      ['gluteos','Glúteo', 'Viernes de water polo. Tercera prioridad de crecimiento — añade carga (mancuerna, kettlebell, barra en hip thrust).'],
+      ['piernas','Pierna (cuádriceps)', 'Jueves, junto al bloque de brazos.'],
+      ['wp_power','Potencia específica de water polo', 'Martes. Rotación de core, lanzamiento y pierna explosiva — pensado para mejorar el chut y el eggbeater.'],
       ['core','Core', 'Aparece casi todos los días en dosis pequeñas — así se entrena de verdad, poco y seguido.'],
       ['conditioning','Conditioning / metabólico', 'Para cerrar el bloque con pulso alto. Wall ball o kettlebell si tienes acceso.']
     ];
@@ -618,7 +677,7 @@
       ['A','B','C'].forEach(letter => {
         html += `<div class="set"><span class="label">Rotación ${letter}</span>`;
         EXERCISES[cat][letter].forEach(ex => {
-          html += `<div class="ex-mini"><div class="exname">${ex.name}</div><div class="excue">${ex.cue}</div><div class="exdose">${ex.dose}</div></div>`;
+          html += `<div class="ex-mini"><div class="exname">${ex.name}</div><div class="excue">${ex.cue}</div><div class="exdose">${ex.dose}</div>${ex.variants ? `<ul class="variants">${ex.variants.map(v=>`<li><b>${v.equip}:</b> ${v.text}</li>`).join('')}</ul>` : ''}</div>`;
         });
         html += `</div>`;
       });
